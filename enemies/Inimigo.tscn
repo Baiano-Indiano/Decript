@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bcdugjxnkb4qs"]
 
-[ext_resource type="Texture2D" uid="uid://c75jrp57x4wfs" path="res://icon.svg" id="1_b0upo"]
+[ext_resource type="Texture2D" uid="uid://c5ub2so816xgp" path="res://addons/phantom_camera/icons/phantom_camera_tween_director.svg" id="1_mc7e5"]
 
 [sub_resource type="GDScript" id="GDScript_3j1he"]
 script/source = "extends CharacterBody2D
@@ -21,36 +21,29 @@ func _physics_process(_delta):
 		velocity = direction * speed
 		move_and_slide()
 
-func take_damage(amount):
+func take_damage(amount, knockback_dir = Vector2.ZERO):
 	health -= amount
-	# Feedback visual rápido: pisca em vermelho ao levar dano
 	modulate = Color.RED
+	
+	if knockback_dir != Vector2.ZERO:
+		velocity = knockback_dir * 300
+		move_and_slide()
+		
 	await get_tree().create_timer(0.1).timeout
 	modulate = Color.WHITE
 	
 	if health <= 0:
 		die()
 
+const ALMA_SCENE = preload(\"res://collectibles/alma.tscn\")
+
 func die():
-	# Aqui você pode instanciar o efeito de \"Alma\" depois
+	var alma = ALMA_SCENE.instantiate()
+	alma.global_position = global_position
+	get_parent().call_deferred(\"add_child\", alma)
 	queue_free()
 
-@export var zumbi_scene: PackedScene 
 
-func _on_timer_timeout():
-	if zumbi_scene:
-		var zumbi = zumbi_scene.instantiate()
-		
-		# Gera uma posição aleatória fora da visão imediata da câmera
-		# Isso cria o efeito de \"horda surgindo da escuridão\"
-		var random_offset = Vector2(randf_range(-600, 600), randf_range(-600, 600))
-		# Garante que não nasçam colados no player
-		if random_offset.length() < 300:
-			random_offset = random_offset.normalized() * 400
-			
-		zumbi.global_position = $Player.global_position + random_offset
-		add_child(zumbi)
-	
 func _on_body_entered(body):
 	if body.has_method(\"take_damage\"):
 		body.take_damage(1) # Dá 1 de dano
@@ -61,15 +54,15 @@ func _on_body_entered(body):
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_b0upo"]
-size = Vector2(119, 121)
+size = Vector2(58, 68)
 
-[node name="Zumbi" type="CharacterBody2D" unique_id=1650157882]
+[node name="Zumbi" type="CharacterBody2D" unique_id=1650157882 groups=["inimigo"]]
 collision_layer = 2
 script = SubResource("GDScript_3j1he")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1738615991]
-texture = ExtResource("1_b0upo")
+texture = ExtResource("1_mc7e5")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1531726730]
-position = Vector2(-0.5, 1.5)
+position = Vector2(1, 8)
 shape = SubResource("RectangleShape2D_b0upo")

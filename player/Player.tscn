@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://bxuwyx2xlgiwo"]
+[gd_scene format=3 uid="uid://d4b2sfku7rk3g"]
 
 [ext_resource type="PackedScene" uid="uid://dbtc0etuxndw3" path="res://weapons/Projetil.tscn" id="1_kpjcp"]
-[ext_resource type="Texture2D" uid="uid://cre0ljr0s5yuc" path="res://assets/icon.svg" id="2_kpjcp"]
+[ext_resource type="Texture2D" uid="uid://cre0ljr0s5yuc" path="res://assets/icon.svg" id="2_3c3w1"]
 
 [sub_resource type="GDScript" id="GDScript_iqovn"]
 script/source = "extends CharacterBody2D
@@ -78,7 +78,7 @@ func gain_xp(amount):
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ngy1p"]
-size = Vector2(44, 46)
+size = Vector2(124, 121)
 
 [sub_resource type="GDScript" id="GDScript_xhfnw"]
 script/source = "extends Camera2D
@@ -102,19 +102,17 @@ func apply_shake(strength: float):
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_xhfnw"]
 
 [node name="Player" type="CharacterBody2D" unique_id=1030419808]
-up_direction = Vector2(0, 1)
 script = SubResource("GDScript_iqovn")
 projectile_scene = ExtResource("1_kpjcp")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=497118350]
-scale = Vector2(0.375, 0.390625)
-texture = ExtResource("2_kpjcp")
+texture = ExtResource("2_3c3w1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=241768527]
 shape = SubResource("RectangleShape2D_ngy1p")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=2055608350]
-zoom = Vector2(2, 2)
+zoom = Vector2(1.5, 2)
 process_callback = 0
 position_smoothing_enabled = true
 script = SubResource("GDScript_xhfnw")

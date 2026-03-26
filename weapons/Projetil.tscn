@@ -22,22 +22,16 @@ func _process(delta):
 	position += direction * speed * delta
 
 func _on_body_entered(body):
-	# Esse print é fundamental! Se ele não aparecer quando bater no zumbi,
-	# o problema é a Colisão (Layers) ou o Sinal (Signal).
 	print(\"Projétil encostou em algo: \", body.name)
-	
 	if body.has_method(\"take_damage\"):
-		print(\"DANDO DANO NO ZUMBI!\")
-		body.take_damage(damage)
+		body.take_damage(damage, direction)
 		
-		# Tenta tremer a câmera se ela existir
 		var camera = get_viewport().get_camera_2d()
 		if camera and camera.has_method(\"apply_shake\"):
 			camera.apply_shake(5.0)
 			
-		queue_free() # Some após o impacto
+		queue_free()
 	
-	# Se bater em paredes do mapa (TileMap ou StaticBody)
 	elif body is TileMapLayer or body is StaticBody2D:
 		queue_free()
 "
@@ -45,7 +39,7 @@ func _on_body_entered(body):
 [sub_resource type="CircleShape2D" id="CircleShape2D_nbv45"]
 
 [node name="Projetil" type="Area2D" unique_id=2018789863]
-z_index = 10
+z_index = 1
 collision_layer = 4
 collision_mask = 2
 script = SubResource("GDScript_4dvx7")
