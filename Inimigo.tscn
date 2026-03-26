@@ -1,0 +1,75 @@
+[gd_scene format=3 uid="uid://bcdugjxnkb4qs"]
+
+[ext_resource type="Texture2D" uid="uid://c75jrp57x4wfs" path="res://icon.svg" id="1_b0upo"]
+
+[sub_resource type="GDScript" id="GDScript_3j1he"]
+script/source = "extends CharacterBody2D
+
+@export var speed = 120
+@export var health = 2
+var player = null
+
+func _ready():
+	# Busca o player na cena Main. 
+	# Certifique-se de que o nome do nó do jogador na cena Main é \"Player\"
+	player = get_tree().current_scene.find_child(\"Player\", true, false)
+
+func _physics_process(_delta):
+	if player:
+		# Direção do Zumbi até o Player
+		var direction = global_position.direction_to(player.global_position)
+		velocity = direction * speed
+		move_and_slide()
+
+func take_damage(amount):
+	health -= amount
+	# Feedback visual rápido: pisca em vermelho ao levar dano
+	modulate = Color.RED
+	await get_tree().create_timer(0.1).timeout
+	modulate = Color.WHITE
+	
+	if health <= 0:
+		die()
+
+func die():
+	# Aqui você pode instanciar o efeito de \"Alma\" depois
+	queue_free()
+
+@export var zumbi_scene: PackedScene 
+
+func _on_timer_timeout():
+	if zumbi_scene:
+		var zumbi = zumbi_scene.instantiate()
+		
+		# Gera uma posição aleatória fora da visão imediata da câmera
+		# Isso cria o efeito de \"horda surgindo da escuridão\"
+		var random_offset = Vector2(randf_range(-600, 600), randf_range(-600, 600))
+		# Garante que não nasçam colados no player
+		if random_offset.length() < 300:
+			random_offset = random_offset.normalized() * 400
+			
+		zumbi.global_position = $Player.global_position + random_offset
+		add_child(zumbi)
+	
+func _on_body_entered(body):
+	if body.has_method(\"take_damage\"):
+		body.take_damage(1) # Dá 1 de dano
+		# Chama o Camera Shake que criamos antes!
+		if get_viewport().get_camera_2d():
+			get_viewport().get_camera_2d().apply_shake(5.0)
+		queue_free() # Destrói o projétil
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_b0upo"]
+size = Vector2(119, 121)
+
+[node name="Zumbi" type="CharacterBody2D" unique_id=1650157882]
+collision_layer = 2
+script = SubResource("GDScript_3j1he")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1738615991]
+texture = ExtResource("1_b0upo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1531726730]
+position = Vector2(-0.5, 1.5)
+shape = SubResource("RectangleShape2D_b0upo")

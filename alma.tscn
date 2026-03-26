@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://dd3hhpspw3xk2"]
+
+[sub_resource type="GDScript" id="GDScript_ujcnp"]
+script/source = "extends Area2D
+
+var xp_value = 1
+var target = null
+var pull_speed = 300
+var is_being_pulled = false
+
+func _ready():
+	# Conecta o sinal para detectar quando o player chega perto
+	body_entered.connect(_on_body_entered)
+
+func _process(delta):
+	if is_being_pulled and target:
+		# Efeito de atração (Lerp suave)
+		global_position = global_position.move_toward(target.global_position, pull_speed * delta)
+		
+		# Se chegar muito perto, absorve
+		if global_position.distance_to(target.global_position) < 10:
+			absorb()
+
+func _on_body_entered(body):
+	if body.name == \"Player\":
+		is_being_pulled = true
+		target = body
+
+func absorb():
+	if target.has_method(\"gain_xp\"):
+		target.gain_xp(xp_value)
+	queue_free()
+"
+
+[node name="Alma" type="Area2D" unique_id=1856562440]
+script = SubResource("GDScript_ujcnp")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1602001708]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=140408129]

@@ -1,0 +1,100 @@
+[gd_scene format=3 uid="uid://d4b2sfku7rk3g"]
+
+[ext_resource type="PackedScene" uid="uid://dbtc0etuxndw3" path="res://Projetil.tscn" id="1_kpjcp"]
+[ext_resource type="Texture2D" uid="uid://c75jrp57x4wfs" path="res://icon.svg" id="1_xhfnw"]
+
+[sub_resource type="GDScript" id="GDScript_iqovn"]
+script/source = "extends CharacterBody2D
+
+@export var speed = 200
+
+var current_xp = 0
+var next_level_xp = 10
+var level = 1
+
+func _physics_process(delta):
+	var direction = Vector2.ZERO
+
+	direction.x = Input.get_action_strength(\"ui_right\") - Input.get_action_strength(\"ui_left\")
+	direction.y = Input.get_action_strength(\"ui_down\") - Input.get_action_strength(\"ui_up\")
+
+	velocity = direction.normalized() * speed
+	move_and_slide()
+
+
+@export var projectile_scene: PackedScene
+
+func _input(event):
+	if event is InputEventMouseButton and event.pressed:
+		shoot()
+
+func shoot():
+	var projectile = projectile_scene.instantiate()
+
+	var mouse_pos = get_global_mouse_position()
+	var dir = (mouse_pos - global_position).normalized()
+	projectile.position = global_position
+	projectile.direction = dir
+
+	get_parent().add_child(projectile)
+
+	$Camera2D.apply_shake(3.0) # Uma trepidação menor só pelo disparo
+
+func level_up():
+	level += 1
+	current_xp = 0
+	next_level_xp *= 1.5 # Aumenta a dificuldade do próximo nível
+	speed += 20 # Exemplo de progressão: fica mais rápido
+	print(\"O Vazio se fortalece. Nível: \", level)
+
+func gain_xp(amount):
+	current_xp += amount
+	print(\"Vazio absorveu alma. XP Atual: \", current_xp) # Feedback no console
+	
+	if current_xp >= next_level_xp:
+		level_up()
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ngy1p"]
+size = Vector2(124, 121)
+
+[sub_resource type="GDScript" id="GDScript_xhfnw"]
+script/source = "extends Camera2D
+
+var shake_strength = 0.0
+var shake_decay = 5.0 # O quão rápido a trepidação para
+
+func _process(delta):
+	if shake_strength > 0:
+		# Diminui a força da trepidação com o tempo
+		shake_strength = lerp(shake_strength, 0.0, shake_decay * delta)
+		# Aplica o offset aleatório
+		offset = Vector2(randf_range(-shake_strength, shake_strength), randf_range(-shake_strength, shake_strength))
+	else:
+		offset = Vector2.ZERO
+
+func apply_shake(strength: float):
+	shake_strength = strength
+"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_xhfnw"]
+
+[node name="Player" type="CharacterBody2D" unique_id=1030419808]
+script = SubResource("GDScript_iqovn")
+projectile_scene = ExtResource("1_kpjcp")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=497118350]
+texture = ExtResource("1_xhfnw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=241768527]
+position = Vector2(-1, -0.5)
+shape = SubResource("RectangleShape2D_ngy1p")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=2055608350]
+zoom = Vector2(1.5, 2)
+process_callback = 0
+position_smoothing_enabled = true
+script = SubResource("GDScript_xhfnw")
+
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=1074652524]
+texture = SubResource("CompressedTexture2D_xhfnw")

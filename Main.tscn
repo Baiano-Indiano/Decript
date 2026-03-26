@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://w4ak1yq18hcn"]
+
+[ext_resource type="PackedScene" uid="uid://d4b2sfku7rk3g" path="res://Player.tscn" id="1_glv2v"]
+
+[sub_resource type="TileSet" id="TileSet_glv2v"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_glv2v"]
+size = Vector2(37, 334.8125)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uu6xs"]
+size = Vector2(698, 20)
+
+[node name="Main" type="Node2D" unique_id=506144006]
+position = Vector2(-4, 13)
+
+[node name="Player" parent="." unique_id=1030419808 instance=ExtResource("1_glv2v")]
+position = Vector2(20, -7)
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=458107666]
+modulate = Color(0.024509296, 0.022664089, 0.0013942438, 1)
+tile_set = SubResource("TileSet_glv2v")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="TileMapLayer" unique_id=1853094913]
+position = Vector2(1, -5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TileMapLayer/StaticBody2D" unique_id=253117746]
+position = Vector2(-102, -29)
+shape = SubResource("RectangleShape2D_glv2v")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="TileMapLayer/StaticBody2D" unique_id=951052123]
+position = Vector2(98, -16)
+shape = SubResource("RectangleShape2D_glv2v")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="TileMapLayer/StaticBody2D" unique_id=606369436]
+position = Vector2(3, -149)
+shape = SubResource("RectangleShape2D_uu6xs")
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="TileMapLayer/StaticBody2D" unique_id=1292182561]
+position = Vector2(4, 122)
+shape = SubResource("RectangleShape2D_uu6xs")
+
+[node name="DirectionalLight2D" type="DirectionalLight2D" parent="." unique_id=1665853714]
+position = Vector2(27, 23)
+energy = 0.1
+
+[node name="Timer" type="Timer" parent="." unique_id=40028151]
+wait_time = 2.0
+autostart = true
