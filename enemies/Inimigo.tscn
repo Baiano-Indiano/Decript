@@ -25,10 +25,12 @@ func take_damage(amount, knockback_dir = Vector2.ZERO):
 	health -= amount
 	modulate = Color.RED
 	
+	# Se houver knockback, empurra o inimigo um pouco
 	if knockback_dir != Vector2.ZERO:
-		velocity = knockback_dir * 300
+		velocity = knockback_dir * 500 # Aumentei o valor para ser visível
 		move_and_slide()
-		
+
+	# O await garante que o flash vermelho dure 0.1s
 	await get_tree().create_timer(0.1).timeout
 	modulate = Color.WHITE
 	

@@ -65,13 +65,20 @@ func shoot_at(target_pos: Vector2):
 func level_up():
 	level += 1
 	current_xp = 0
-	next_level_xp *= 1.5 # Aumenta a dificuldade do próximo nível
-	speed += 20 # Exemplo de progressão: fica mais rápido
+	next_level_xp *= 1.5 
+	speed += 20 
+	
+
+	attack_cooldown = max(0.1, attack_cooldown - 0.05)
+	
+	var tween = create_tween()
+	tween.tween_property(self, \"modulate\", Color.CYAN, 0.2)
+	tween.tween_property(self, \"modulate\", Color.WHITE, 0.2)
 	print(\"O Vazio se fortalece. Nível: \", level)
 
 func gain_xp(amount):
 	current_xp += amount
-	print(\"Vazio absorveu alma. XP Atual: \", current_xp) # Feedback no console
+	print(\"Vazio absorveu alma. XP Atual: \", current_xp)
 	
 	if current_xp >= next_level_xp:
 		level_up()
