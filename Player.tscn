@@ -2,87 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://dbtc0etuxndw3" path="res://weapons/Projetil.tscn" id="1_kpjcp"]
 [ext_resource type="Texture2D" uid="uid://cre0ljr0s5yuc" path="res://assets/icon.svg" id="2_kpjcp"]
-
-[sub_resource type="GDScript" id="GDScript_iqovn"]
-script/source = "extends CharacterBody2D
-
-@export var speed = 200
-
-var current_xp = 0
-var next_level_xp = 10
-var level = 1
-
-var attack_cooldown = 0.5
-var time_since_last_attack = 0.0
-var attack_range = 350.0
-
-func _physics_process(delta):
-	var direction = Vector2.ZERO
-
-	direction.x = Input.get_action_strength(\"ui_right\") - Input.get_action_strength(\"ui_left\")
-	direction.y = Input.get_action_strength(\"ui_down\") - Input.get_action_strength(\"ui_up\")
-
-	velocity = direction.normalized() * speed
-	move_and_slide()
-
-	time_since_last_attack += delta
-	if time_since_last_attack >= attack_cooldown:
-		auto_attack()
-
-@export var projectile_scene: PackedScene
-
-func auto_attack():
-	var enemies = get_tree().get_nodes_in_group(\"inimigo\")
-	if enemies.size() == 0:
-		return
-		
-	var closest_enemy = null
-	var min_dist = attack_range
-	
-	for enemy in enemies:
-		if not is_instance_valid(enemy):
-			continue
-		var dist = global_position.distance_to(enemy.global_position)
-		if dist < min_dist:
-			min_dist = dist
-			closest_enemy = enemy
-			
-	if closest_enemy != null:
-		shoot_at(closest_enemy.global_position)
-		time_since_last_attack = 0.0
-
-func shoot_at(target_pos: Vector2):
-	var projectile = projectile_scene.instantiate()
-
-	var dir = (target_pos - global_position).normalized()
-	projectile.position = global_position
-	projectile.direction = dir
-
-	get_parent().add_child(projectile)
-
-	$Camera2D.apply_shake(1.5)
-
-func level_up():
-	level += 1
-	current_xp = 0
-	next_level_xp *= 1.5 
-	speed += 20 
-	
-
-	attack_cooldown = max(0.1, attack_cooldown - 0.05)
-	
-	var tween = create_tween()
-	tween.tween_property(self, \"modulate\", Color.CYAN, 0.2)
-	tween.tween_property(self, \"modulate\", Color.WHITE, 0.2)
-	print(\"O Vazio se fortalece. Nível: \", level)
-
-func gain_xp(amount):
-	current_xp += amount
-	print(\"Vazio absorveu alma. XP Atual: \", current_xp)
-	
-	if current_xp >= next_level_xp:
-		level_up()
-"
+[ext_resource type="Script" path="res://player/player.gd" id="3_player"]
+[ext_resource type="PackedScene" path="res://level_up_menu.tscn" id="4_menu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ngy1p"]
 size = Vector2(44, 46)
@@ -110,8 +31,9 @@ func apply_shake(strength: float):
 
 [node name="Player" type="CharacterBody2D" unique_id=1030419808]
 up_direction = Vector2(0, 1)
-script = SubResource("GDScript_iqovn")
+script = ExtResource("3_player")
 projectile_scene = ExtResource("1_kpjcp")
+level_up_menu_scene = ExtResource("4_menu")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=497118350]
 scale = Vector2(0.375, 0.390625)
