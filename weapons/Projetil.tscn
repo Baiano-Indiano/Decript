@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://dbtc0etuxndw3"]
+
+[ext_resource type="Texture2D" uid="uid://dr8d8f5vvhc1h" path="res://assets/Gemini_Generated_Image_fg5y57fg5y57fg5y oporra.png" id="1_2bctk"]
+
+[sub_resource type="GDScript" id="GDScript_4dvx7"]
+resource_name = "projetil"
+script/source = "extends Area2D
+
+@export var speed: float = 600.0 # Um pouco mais rápido para o \"feeling\" de Diablo
+var direction: Vector2 = Vector2.ZERO
+var damage: int = 1
+
+func _ready():
+	# 1. Rotaciona o visual para a direção certa
+	if direction != Vector2.ZERO:
+		rotation = direction.angle()
+	
+	# 2. Timer de segurança: Se o tiro não acertar nada em 3 segundos, ele some sozinho
+	# Isso evita que o jogo trave por excesso de objetos (Mecânica Central)
+	var timer = get_tree().create_timer(3.0)
+	timer.timeout.connect(queue_free)
+
+func _process(delta):
+	# Movimentação baseada na direção (Interação Jogável)
+	global_position += direction * speed * delta
+
+func _on_body_entered(body):
+	# 3. LOG: Ajuda você a ver no console o que o tiro acertou
+	print(\"Projétil atingiu: \", body.name)
+	
+	# 4. Dano e Morte (Passo 3: Lógica de Interação)
+	if body.has_method(\"take_damage\"):
+		body.take_damage(damage, direction)
+		
+		# Feedback Visual: Tremor de câmera no acerto
+		var camera = get_viewport().get_camera_2d()
+		if camera and camera.has_method(\"apply_shake\"):
+			camera.apply_shake(5.0)
+			
+		queue_free() # Tiro some ao acertar inimigo
+	
+	# 5. Colisão com o cenário (Passo 2: Objetos de Colisão)
+	elif body is TileMapLayer or body is StaticBody2D:
+		queue_free() # Tiro some ao bater na parede	
+"
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_cs4wc"]
+radius = 5.9997716
+height = 21.999163
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ymcir"]
+atlas = ExtResource("1_2bctk")
+region = Rect2(0, 384, 352, 384)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ct5kd"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ymcir")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Projetil" type="Area2D" unique_id=2018789863]
+z_index = 1
+collision_layer = 4
+collision_mask = 2
+script = SubResource("GDScript_4dvx7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=230958634]
+rotation = 1.5620697
+shape = SubResource("CapsuleShape2D_cs4wc")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=408491242]
+position = Vector2(4.7683716e-07, 0)
+scale = Vector2(0.06818183, 0.037760414)
+sprite_frames = SubResource("SpriteFrames_ct5kd")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
