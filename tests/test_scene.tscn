@@ -1,6 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://test_scene"]
+[gd_scene load_steps=4 format=3 uid="uid://test_scene"]
 
 [ext_resource type="Script" path="res://tests/test_player.gd" id="1_test"]
+[ext_resource type="Script" path="res://tests/test_enemy_spawner.gd" id="2_test"]
+[ext_resource type="Script" path="res://tests/test_enemy.gd" id="3_test"]
 
 [node name="TestRunner" type="Node"]
+
+[node name="PlayerTests" type="Node" parent="."]
 script = ExtResource("1_test")
+
+[node name="EnemySpawnerTests" type="Node" parent="."]
+script = ExtResource("2_test")
+
+[node name="EnemyTests" type="Node" parent="."]
+script = ExtResource("3_test")
