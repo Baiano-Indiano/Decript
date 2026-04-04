@@ -21,7 +21,7 @@ func _ready() -> void:
 	_base_speed = speed
 	_base_max_health = max_health
 	health = max_health
-	add_to_group("enemies")
+	add_to_group("inimigo")
 
 func _physics_process(_delta: float) -> void:
 	if is_instance_valid(player):
