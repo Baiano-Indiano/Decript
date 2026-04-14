@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://weapons/aura_dano.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/Aura_mais_Ego.png" id="2"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 100.0
+
+[node name="AuraDano" type="Node2D"]
+
+[node name="Area2D" type="Area2D" parent="."]
+monitoring = true
+monitorable = true
+script = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_1")
+
+[node name="Sprite2D" type="Sprite2D" parent="Area2D"]
+texture = ExtResource("2")
+
+[node name="Timer" type="Timer" parent="Area2D"]
+wait_time = 1.0

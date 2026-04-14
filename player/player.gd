@@ -26,7 +26,14 @@ var upgrade_options = [
 
 func _ready():
 	current_health = max_health
+	attack_cooldown = 0.5 / level
 	emit_signal("xp_atualizado", current_xp, next_level_xp)
+	
+	# Add weapons
+	var sword = preload("res://weapons/EspadaGiratoria.tscn").instantiate()
+	add_child(sword)
+	var aura = preload("res://weapons/AuraDano.tscn").instantiate()
+	add_child(aura)
 
 func _physics_process(delta):
 	var direction = Vector2.ZERO
@@ -64,6 +71,9 @@ func auto_attack():
 		time_since_last_attack = 0.0
 
 func shoot_at(target_pos: Vector2):
+	if not projectile_scene:
+		push_warning("Player: projectile_scene não atribuída no inspetor!")
+		return
 	var projectile = projectile_scene.instantiate()
 
 	var dir = (target_pos - global_position).normalized()
@@ -88,6 +98,7 @@ func gain_xp(amount):
 
 func level_up():
 	level += 1
+	attack_cooldown = 0.5 / level
 	current_xp -= next_level_xp  # Handle overflow
 	next_level_xp = int(next_level_xp * 1.5)
 	
